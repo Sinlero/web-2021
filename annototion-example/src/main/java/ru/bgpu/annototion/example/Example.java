@@ -6,7 +6,11 @@ public class Example {
     public static String VALUE = "SET";
     
     private int first = 0;
+    
+    @SetValue
     private Integer second;
+    @SetValue(202)
+    private Integer second2;
     
     private String name;
     
@@ -38,9 +42,22 @@ public class Example {
         this.name = name;
     }
 
+
+    public Integer getSecond2() {
+        return second2;
+    }
+
+    public void setSecond2(Integer second2) {
+        this.second2 = second2;
+    }
+    
+    
+
     @Override
     public String toString() {
-        return getClass().getSimpleName()+" -> "+name+" {"+first+", "+second+"}";
+        return getClass().getSimpleName()
+                +" -> "+name+
+                " {"+first+", "+second+","+second2+"}";
     }
         
 }

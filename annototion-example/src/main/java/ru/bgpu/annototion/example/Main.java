@@ -31,29 +31,33 @@ public class Main {
             Object o = c.getConstructor(String.class).newInstance("Hello");
            
             for(Field field: c.getDeclaredFields()) {
-                String name = field.getName();
-                try {
-                    Method setter = c.getDeclaredMethod(
-                            "set"+name.substring(0, 1).toUpperCase()+
-                            name.substring(1, name.length()),
-                            Integer.class
-                    );
-                    setter.invoke(o, 100);
-                } catch(NoSuchMethodException ignored) {}
-                try {
-                    Method setter = c.getDeclaredMethod(
-                            "set"+name.substring(0, 1).toUpperCase()+
-                            name.substring(1, name.length()),
-                            int.class
-                    );
-                    setter.invoke(o, 100);
-                } catch(NoSuchMethodException ignored) {}
+                
+                if(field.isAnnotationPresent(SetValue.class)) {
+                    invokeSetter(o, c, field, field.getType());
+                }
             }
-            
             System.out.println(o);
             
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        
+
     }
+   
+    public static void invokeSetter(Object o,Class c,Field field,Class type) {
+            try {
+                String name = field.getName();
+                Method setter = c.getDeclaredMethod(
+                        "set"+name.substring(0, 1).toUpperCase()+
+                        name.substring(1, name.length()),
+                        type
+                );
+                setter.invoke(o,
+                        field.getDeclaredAnnotation(SetValue.class).value()
+                );
+            } catch(NoSuchMethodException ignored) {}
+    }
+    
 }
