@@ -57,7 +57,7 @@ public class Main {
                 setter.invoke(o,
                         field.getDeclaredAnnotation(SetValue.class).value()
                 );
-            } catch(NoSuchMethodException ignored) {}
+            } catch(Exception ignored) {}
     }
     
 }
