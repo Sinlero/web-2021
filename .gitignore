@@ -1,1 +1,3 @@
-/annototion-example/target/
+*/target/
+*.iml
+*.idea
