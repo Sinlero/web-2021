@@ -24,7 +24,7 @@
 * Тип свойства сводится по типу аннотированного поля, необходимо реализовать строки,
   целые и вещественные числа, а также коллекции этих типов. 
 
-[1]: https://ronmamo.github.io/reflections/org/reflections/Reflections.html
+[1]: https://github.com/ronmamo/reflections
 [2]: src/main/java/ru/bgpu/task/annotation/annotations/ExampleAnnotation.java
 [3]: src/main/java/ru/bgpu/task/annotation/example
 [4]: src/main/java/ru/bgpu/task/annotation/AnnotationScanner.java
