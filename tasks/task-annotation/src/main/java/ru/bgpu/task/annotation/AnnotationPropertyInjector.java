@@ -5,13 +5,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.TreeSet;
 
 public class AnnotationPropertyInjector {
 
-    private static final String PROPERTY_PATH = "src/main/resources/config.properties";
+    private static final String PROPERTY_PATH = "tasks/task-annotation/src/main/resources/config.properties";
 
     public static void inject() {
-        
+        Properties props = load(PROPERTY_PATH);
+        TreeSet<String> propertyNames = new TreeSet<>(props.stringPropertyNames());
+        for (String propertyName : propertyNames) {
+            System.out.printf("%s = %s\n", propertyName, props.getProperty(propertyName));
+        }
     }
 
     private static Properties load(String path) {
