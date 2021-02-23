@@ -9,4 +9,10 @@ public class ClassWithAnnotatedFields {
 
     @InjectProperty
     public static Integer size;
+
+    @InjectProperty(name = "int")
+    public static Integer intField;
+
+    @InjectProperty
+    public static Double aDouble;
 }
