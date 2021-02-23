@@ -22,24 +22,16 @@ public class AnnotationPropertyInjector {
             if (field.isAnnotationPresent(InjectProperty.class)) {
                 String parameter = field.getAnnotation(InjectProperty.class).name();
                 if (!parameter.isEmpty()) {
-                    if (field.getType().equals(Integer.class)) {
-                        field.set(object, Integer.parseInt(props.getProperty(parameter)));
-                    }
-                    if (field.getType().equals(Double.class)) {
-                        field.set(object, Double.parseDouble(props.getProperty(parameter)));
-                    }
-                    if (field.getType().equals(String.class)) {
-                        field.set(object, props.getProperty(parameter));
+                    switch (typeCheck(field.getType())) {
+                        case "Integer": field.set(object, Integer.parseInt(props.getProperty(parameter)));   break;
+                        case "Double":  field.set(object, Double.parseDouble(props.getProperty(parameter))); break;
+                        default:        field.set(object, props.getProperty(parameter)); break;
                     }
                 } else {
-                    if (field.getType().equals(Integer.class)) {
-                        field.set(object, Integer.parseInt(props.getProperty(field.getName())));
-                    }
-                    if (field.getType().equals(Double.class)) {
-                        field.set(object, Double.parseDouble(props.getProperty(field.getName())));
-                    }
-                    if (field.getType().equals(String.class)) {
-                        field.set(object, props.getProperty(field.getName()));
+                    switch (typeCheck(field.getType())) {
+                        case "Integer": field.set(object, Integer.parseInt(props.getProperty(field.getName())));   break;
+                        case "Double":  field.set(object, Double.parseDouble(props.getProperty(field.getName()))); break;
+                        default:        field.set(object, props.getProperty(field.getName())); break;
                     }
                 }
             }
@@ -61,6 +53,16 @@ public class AnnotationPropertyInjector {
             exception.printStackTrace();
         }
         return props;
+    }
+
+    private static String typeCheck(Class<?> clazzType) {
+        if (clazzType.equals(Integer.class)) {
+            return "Integer";
+        }
+        if (clazzType.equals(Double.class)) {
+            return "Double";
+        }
+        return "String";
     }
 
 }
