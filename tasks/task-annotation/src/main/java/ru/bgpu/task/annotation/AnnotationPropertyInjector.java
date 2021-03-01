@@ -8,7 +8,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AnnotationPropertyInjector {
 
@@ -21,21 +25,76 @@ public class AnnotationPropertyInjector {
         for (Field field : clazz.getFields()) {
             if (field.isAnnotationPresent(InjectProperty.class)) {
                 String parameter = field.getAnnotation(InjectProperty.class).name();
-                if (!parameter.isEmpty()) {
-                    switch (typeCheck(field.getType())) {
-                        case "Integer": field.set(object, Integer.parseInt(props.getProperty(parameter)));   break;
-                        case "Double":  field.set(object, Double.parseDouble(props.getProperty(parameter))); break;
-                        default:        field.set(object, props.getProperty(parameter)); break;
+                if (Collection.class.isAssignableFrom(field.getType())) {
+                    if(!parameter.isEmpty()) {
+                        switch (getTypeOfGeneric(field.getGenericType().getTypeName())) {
+                            case "Integer":
+                                Collection<Integer> integerCollection = (Collection<Integer>) field.getType().newInstance();
+                                String[] intArray = props.getProperty(parameter).split(", ");
+                                for (String s : intArray) {
+                                    integerCollection.add(Integer.parseInt(s));
+                                }
+                                field.set(object, integerCollection);
+                                break;
+                            case "Double":
+                                Collection<Double> doubleCollection = (Collection<Double>) field.getType().newInstance();
+                                String[] doubleArray = props.getProperty(parameter).split(", ");
+                                for (String s : doubleArray) {
+                                    doubleCollection.add(Double.parseDouble(s));
+                                }
+                                field.set(object, doubleCollection);
+                                break;
+                            case "String":
+                                Collection<String> stringCollection = (Collection<String>) field.getType().newInstance();
+                                String[] array = props.getProperty(parameter).split(", ");
+                                stringCollection.addAll(Arrays.asList(array));
+                                field.set(object, stringCollection);
+                                break;
+                        }
+                    } else {
+                        switch (getTypeOfGeneric(field.getGenericType().getTypeName())) {
+                            case "Integer":
+                                Collection<Integer> integerCollection = (Collection<Integer>) field.getType().newInstance();
+                                String[] intArray = props.getProperty(field.getName()).split(", ");
+                                for (String s : intArray) {
+                                    integerCollection.add(Integer.parseInt(s));
+                                }
+                                field.set(object, integerCollection);
+                                break;
+                            case "Double":
+                                Collection<Double> doubleCollection = (Collection<Double>) field.getType().newInstance();
+                                String[] doubleArray = props.getProperty(field.getName()).split(", ");
+                                for (String s : doubleArray) {
+                                    doubleCollection.add(Double.parseDouble(s));
+                                }
+                                field.set(object, doubleCollection);
+                                break;
+                            case "String":
+                                Collection<String> stringCollection = (Collection<String>) field.getType().newInstance();
+                                String[] array = props.getProperty(field.getName()).split(", ");
+                                stringCollection.addAll(Arrays.asList(array));
+                                field.set(object, stringCollection);
+                                break;
+                        }
                     }
                 } else {
-                    switch (typeCheck(field.getType())) {
-                        case "Integer": field.set(object, Integer.parseInt(props.getProperty(field.getName())));   break;
-                        case "Double":  field.set(object, Double.parseDouble(props.getProperty(field.getName()))); break;
-                        default:        field.set(object, props.getProperty(field.getName())); break;
+                    if (!parameter.isEmpty()) {
+                        switch (typeCheck(field.getType())) {
+                            case "Integer": field.set(object, Integer.parseInt(props.getProperty(parameter)));break;
+                            case "Double": field.set(object, Double.parseDouble(props.getProperty(parameter)));break;
+                            case "String": field.set(object, props.getProperty(parameter));break;
+                        }
+                    } else {
+                        switch (typeCheck(field.getType())) {
+                            case "Integer": field.set(object, Integer.parseInt(props.getProperty(field.getName())));break;
+                            case "Double": field.set(object, Double.parseDouble(props.getProperty(field.getName())));break;
+                            case "String": field.set(object, props.getProperty(field.getName()));break;
+                        }
                     }
                 }
             }
         }
+        System.out.println("Injected params:");
         for (Field field : object.getClass().getFields()) {
             System.out.println(field.get(object));
         }
@@ -63,6 +122,16 @@ public class AnnotationPropertyInjector {
             return "Double";
         }
         return "String";
+    }
+
+    private static String getTypeOfGeneric(String fullName) {
+        String genericType = "";
+        Pattern pattern = Pattern.compile(".*\\.(.*)>");
+        Matcher matcher = pattern.matcher(fullName);
+        while (matcher.find()) {
+            genericType = matcher.group(1);
+        }
+        return genericType;
     }
 
 }
