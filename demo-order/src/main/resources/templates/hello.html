@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headerFragment (pageTitle)">
+    <title th:text="'Hello, '+${name}">Template title</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>
+        <span th:text="'Hello, '+${name}"></span>
+    </h1>
+</body>
+</html>
